@@ -1,0 +1,128 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Weather Forecast</title>
+    <style>
+        body{
+            height:100vh;
+            background-image: linear-gradient(to top, #a18cd1 0%, #fbc2eb 100%);;
+            display: grid;
+            place-items: center;
+            font-family: Arial, Helvetica, sans-serif;
+        }
+        .container{
+            background-color: white;
+            padding: 30px;
+            border-radius: 10px;
+            min-width: 350px;
+            text-align: center;
+        }
+        .container h1{
+            color: teal;
+            margin-bottom: 20px;
+        }
+        .input-group{
+            display: flex;
+            gap: 10px;
+            margin-bottom: 20px;
+        }
+        #city{
+            padding: 10px;
+            border: 1px solid teal;
+            border-radius: 5px;
+            font-size: 16px;
+        }
+        button{
+            padding: 10px 20px;
+            background-color: teal;
+            color: #fff;
+            font-size: 16px;
+            border-radius: 5px;
+            border: 0;
+        }
+        #result{
+            background-color: hsl(199, 62%, 43%);
+
+        }
+        #result{
+            display:flex;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>Check the Weather</h1>
+        <div class="input-group">
+            <input type="text" placeholder="Enter your city" id="city">
+            <button onclick="getWeather()">Search</button>
+        </div>
+        <div id="result"></div>
+        <div id="result2"></div>
+        <div id="error" style="color:red;"></div>
+    </div>
+    <script>
+        async function getWeather(){
+            const result=document.getElementById("result");
+            const error=document.getElementById("error");
+            const city=document.getElementById("city").value;
+
+            result.innerHTML="Loading...";
+            error.innerHTML="";
+
+            const url=`https://wttr.in/${city}?format=j1`;
+            try{
+                const res=await fetch(url);
+                const data=await res.json();
+                console.log(data);
+
+                //current weather
+                const current =data.current_condition[0];
+                const desc=current.weatherDesc[0].value;
+                const tempc=current.temp_C;
+                const feels= current.FeelsLikeC;
+
+                //3-Day Forecast
+                // const forecast=data.weather.slice(0,3)// first 3 days 0 1 2 3 4
+                // .map((day,index)=>{
+                //     const avgTemp=day.avgtempC;
+                //     const dayDesc=day.hourly[4].weatherDesc[0].value//mid-day description
+                //     return`
+                //     <div style="margin-top:10px;">
+                //         <h3>📅Day${index+1}</h3>
+                //         <p><b>Avg Temp:</b>${dayDesc}</p>
+                //         <hr>
+                //     </div>
+                //     `;
+                // }).join("");
+                // console.log(forecast);
+                result.innerHTML=`<p><b>⛅Weather:</b>${desc}</p>
+                <p><b>🌡️Temperature:</b>${tempc}C</p>
+                <p><b>⛅Feels like:</b>${feels}C</p>
+                <hr>
+                <h2>📅Next 3 Days Forecast</h2>
+               `;
+
+                result2.innerHTML=`<div>
+                    <h1>Day 1</h1>
+                    <p><b>Average Tempertaure:</b>${data.weather[0].avgtempC}</p>
+                    <p><b>Weather Description:</b>${data.weather[0].hourly[4].weatherDesc[0].value}</p>
+                    </div>
+                <div><h1>Day 2</h1>
+                    <p><b>Average Tempertaure:</b>${data.weather[1].avgtempC}</p>
+                    <p><b>Weather Description:</b>${data.weather[1].hourly[4].weatherDesc[0].value}</p></div>
+                <div><h1>Day 1</h1>
+                    <p><b>Average Tempertaure:</b>${data.weather[2].avgtempC}</p>
+                    <p><b>Weather Description:</b>${data.weather[2].hourly[4].weatherDesc[0].value}</p></div>
+                `
+
+            }
+            catch(err){
+                console.log(err);
+                error.innerHTML="Some error happened, please try again later!";
+            }
+        }
+    </script>
+</body>
+</html>
